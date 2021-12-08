@@ -32,3 +32,21 @@ tar -cvf /tmp/$name-httpd-logs-$dt.tar /var/log/apache2
 fz=$(ls -l --block-size=M /tmp/$name-httpd-logs-$dt.tar | awk '{print $5}')
 
 aws s3 cp /tmp/$name-httpd-logs-$dt.tar s3://upgrad-kabirgarhwal/$name-httpd-logs-$dt.tar
+
+inventory_file=/var/www/html/inventory.html
+if [ ! -f "$inventory_file" ]
+then
+touch "$inventory_file"
+echo "Log Type&emsp;&emsp;&emsp;&emsp;Time Created&emsp;&emsp;&emsp;&emsp;Type&emsp;&emsp;&emsp;&emsp;Size &emsp;&emsp;&emsp;&emsp;<br>" >> "$inventory_file"
+fi
+echo "<br>" >> $inventory_file
+
+echo "httpd-logs&emsp;&emsp;&emsp;"$dt"&emsp;&emsp;&nbsp;&nbsp;tar&emsp;&emsp;&emsp;&emsp;"$fz"&emsp;&emsp;&emsp;<br>" >> "$inventory_file"
+
+cron_file="/etc/cron.d/automation"
+
+if [ ! -f "$cron_file" ]
+then
+touch "$cron_file"
+echo "00 00 * * * root /root/Automation_Project/automation.sh" > "$cron_file"
+fi
